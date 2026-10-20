@@ -189,8 +189,12 @@ fun ClassDetailScreen(nav: NavController, classId: Long) {
 
     if (adding) {
         StudentDialog(null, onDismiss = { adding = false }, onSave = { no, name, phone ->
-            adding = false
-            scope.launch { dao.insertStudent(Student(classId = classId, number = no, name = name, parentPhone = phone)) }
+            if (no.isNotEmpty() && students.any { it.number == no }) {
+                Toast.makeText(ctx, "$no numaralı öğrenci zaten listede", Toast.LENGTH_SHORT).show()
+            } else {
+                adding = false
+                scope.launch { dao.insertStudent(Student(classId = classId, number = no, name = name, parentPhone = phone)) }
+            }
         })
     }
     editing?.let { s ->
@@ -198,8 +202,12 @@ fun ClassDetailScreen(nav: NavController, classId: Long) {
             s,
             onDismiss = { editing = null },
             onSave = { no, name, phone ->
-                editing = null
-                scope.launch { dao.updateStudent(s.copy(number = no, name = name, parentPhone = phone)) }
+                if (no.isNotEmpty() && students.any { it.id != s.id && it.number == no }) {
+                    Toast.makeText(ctx, "$no numaralı öğrenci zaten listede", Toast.LENGTH_SHORT).show()
+                } else {
+                    editing = null
+                    scope.launch { dao.updateStudent(s.copy(number = no, name = name, parentPhone = phone)) }
+                }
             },
             onDelete = {
                 editing = null

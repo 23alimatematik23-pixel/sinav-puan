@@ -34,6 +34,11 @@ object ImageUtils {
         return bmp
     }
 
+    fun scaledCrop(src: Bitmap, area: android.graphics.Rect, scale: Float): Bitmap {
+        val m = Matrix().apply { postScale(scale, scale) }
+        return Bitmap.createBitmap(src, area.left, area.top, area.width(), area.height(), m, true)
+    }
+
     fun isRed(c: Int): Boolean {
         val r = (c shr 16) and 0xff
         val g = (c shr 8) and 0xff
